@@ -110,6 +110,10 @@ function closeOverlay(overlay) {
 
   overlay.classList.remove("open");
 
+  if (overlay.id === "authOverlay") {
+    resumeTicketAfterAuth = false;
+  }
+
   const anotherOpen = [...overlays].some(item =>
     item.classList.contains("open")
   );
@@ -135,6 +139,12 @@ function openServerPicker() {
 }
 
 function openApplicationForm(server) {
+  if (!currentUser) {
+    closeOverlay(serverOverlay);
+    startTicket();
+    return;
+  }
+
   currentServer = server;
 
   if (selectedServer) selectedServer.textContent = server;
@@ -149,7 +159,24 @@ function openApplicationForm(server) {
   openOverlay(formOverlay);
 }
 
-createTicket?.addEventListener("click", openNotice);
+let resumeTicketAfterAuth = false;
+
+async function startTicket() {
+  if (supabaseClient) {
+    await refreshAuthState();
+  }
+
+  if (!currentUser) {
+    resumeTicketAfterAuth = true;
+    showToast("Чтобы создать тикет, сначала войди в аккаунт или зарегистрируйся.");
+    openAuth("login");
+    return;
+  }
+
+  openNotice();
+}
+
+createTicket?.addEventListener("click", startTicket);
 continueApplication?.addEventListener("click", openServerPicker);
 
 /* ВЫБОР РАЗДЕЛА */
@@ -660,6 +687,7 @@ authForm?.addEventListener("submit", async event => {
   );
 
   const password = String(form.get("password") || "");
+  const shouldResumeTicket = resumeTicketAfterAuth;
 
   if (!validUsername(username)) {
     authError.textContent =
@@ -736,6 +764,8 @@ authForm?.addEventListener("submit", async event => {
 
     if (pendingApplication) {
       await submitApplicationToSupabase(pendingApplication);
+    } else if (shouldResumeTicket) {
+      openNotice();
     }
 
   } catch (error) {
@@ -1283,6 +1313,12 @@ applicationForm?.addEventListener("submit", async event => {
   const data = Object.fromEntries(formData.entries());
 
   formError.textContent = "";
+
+  if (!currentUser) {
+    formError.textContent = "Сессия истекла. Войди в аккаунт, чтобы отправить анкету.";
+    startTicket();
+    return;
+  }
 
   if (!validateAge(data.age)) {
     formError.textContent = "Укажи корректный возраст.";
