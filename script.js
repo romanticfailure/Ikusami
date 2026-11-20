@@ -1,4 +1,3 @@
-
 /* IKUSAMI — Supabase integration.
    Перед регистрацией отключи Confirm email в настройках Supabase.
    Никогда не добавляй Secret/service_role key в этот файл.
@@ -38,16 +37,11 @@ function showPage(name) {
     link.classList.toggle("active", link.dataset.page === name);
   });
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 navLinks.forEach(link => {
-  link.addEventListener("click", () => {
-    showPage(link.dataset.page);
-  });
+  link.addEventListener("click", () => showPage(link.dataset.page));
 });
 
 document.querySelector(".brand")?.addEventListener("click", event => {
@@ -92,15 +86,11 @@ function openServerPicker() {
 function openApplicationForm(server) {
   currentServer = server;
 
-  if (selectedServer) {
-    selectedServer.textContent = server;
-  }
+  if (selectedServer) selectedServer.textContent = server;
 
   applicationForm.reset();
 
-  if (formError) {
-    formError.textContent = "";
-  }
+  if (formError) formError.textContent = "";
 
   renderApplicationForm(server);
 
@@ -192,37 +182,27 @@ function renderMinecraftForm() {
 
   formGrid.innerHTML = `
     ${field("Никнейм Minecraft", "nickname", "text", "Твой никнейм")}
-
     ${field("Возраст", "age", "number", "Твой возраст")}
-
     ${field("Опыт игры", "experience", "text", "Например, 2 года")}
-
     ${field("Онлайн в день", "online", "text", "Например, 4–6 часов")}
-
     ${field("Предыдущие кланы", "clans", "text", "Укажи кланы или напиши «Нет»")}
-
     ${field("Ваш донат", "donate", "text", "Например, отсутствует")}
-
     ${selectField("Оценка своего PvP", "pvp", pvpOptions)}
-
     ${selectField("Часовой пояс относительно МСК", "timezone", timezoneOptions())}
-
     ${textarea("Почему хочешь вступить к нам?", "reason", "Расскажи о своей мотивации...")}
-
     ${textarea("Дополнительная информация", "extra", "Необязательно", false)}
   `;
 
   formFootnote.textContent = "* Обязательные поля";
 }
 
-/* DISCORD STAFF — ОТДЕЛЬНАЯ АНКЕТА */
+/* DISCORD STAFF */
 
 function renderStaffForm() {
   formTitle.textContent = "Анкета Discord Staff";
 
   formGrid.innerHTML = `
     ${field("Твой Discord-никнейм", "discordNickname", "text", "Например, username")}
-
     ${field("Возраст", "age", "number", "Твой возраст")}
 
     ${selectField("Есть ли опыт модерации?", "staffExperience", [
@@ -245,22 +225,15 @@ function renderStaffForm() {
     ])}
 
     ${selectField("Твой часовой пояс", "staffTimezone", timezoneOptions())}
-
     ${textarea("Почему ты хочешь попасть в команду Ikusami?", "staffReason", "Расскажи о своей мотивации...")}
-
     ${textarea("Как ты поступишь, если два участника начнут конфликт?", "conflict", "Опиши свои действия...")}
-
     ${textarea("Что сделаешь, если твой друг нарушит правила?", "friendViolation", "Как будешь действовать в такой ситуации?")}
-
     ${textarea("Почему именно тебя стоит принять в команду?", "staffAdvantages", "Расскажи о своих качествах и преимуществах...")}
-
     ${textarea("Дополнительная информация", "extra", "Необязательно", false)}
   `;
 
   formFootnote.textContent = "* Обязательные поля";
 }
-
-/* ВЫБОР НУЖНОЙ АНКЕТЫ */
 
 function renderApplicationForm(server) {
   if (server === "Discord Staff") {
@@ -293,9 +266,7 @@ document.addEventListener("keydown", event => {
       overlay.classList.contains("open")
     );
 
-    if (openModal) {
-      closeOverlay(openModal);
-    }
+    if (openModal) closeOverlay(openModal);
   }
 });
 
@@ -346,12 +317,31 @@ const openAdmin = document.getElementById("openAdmin");
 const adminApplications = document.getElementById("adminApplications");
 const logoutButton = document.getElementById("logoutButton");
 
+/* ЭЛЕМЕНТЫ НОВОЙ АДМИНКИ */
+
+const adminSearch = document.getElementById("adminSearch");
+const adminStatusFilter = document.getElementById("adminStatusFilter");
+const adminServerFilter = document.getElementById("adminServerFilter");
+const adminSort = document.getElementById("adminSort");
+const refreshAdmin = document.getElementById("refreshAdmin");
+
+const statTotal = document.getElementById("statTotal");
+const statPending = document.getElementById("statPending");
+const statApproved = document.getElementById("statApproved");
+const statRejected = document.getElementById("statRejected");
+
+const adminResultsCount = document.getElementById("adminResultsCount");
+const adminLastUpdated = document.getElementById("adminLastUpdated");
+
 let authMode = "login";
 let currentUser = null;
 let currentProfile = null;
 let pendingApplication = null;
 
-/* УПРАВЛЕНИЕ ДОСТУПОМ АДМИНИСТРАТОРА */
+let allAdminApplications = [];
+let adminLoadInProgress = false;
+
+/* ДОСТУП АДМИНИСТРАТОРА */
 
 function updateAdminAccess() {
   const isAdmin =
@@ -369,6 +359,28 @@ function updateAdminAccess() {
   return isAdmin;
 }
 
+function clearAdminData() {
+  allAdminApplications = [];
+
+  if (adminApplications) {
+    adminApplications.innerHTML =
+      '<p class="empty-state">Войдите в аккаунт администратора.</p>';
+  }
+
+  if (statTotal) statTotal.textContent = "—";
+  if (statPending) statPending.textContent = "—";
+  if (statApproved) statApproved.textContent = "—";
+  if (statRejected) statRejected.textContent = "—";
+
+  if (adminResultsCount) {
+    adminResultsCount.textContent = "Нет доступа";
+  }
+
+  if (adminLastUpdated) {
+    adminLastUpdated.textContent = "";
+  }
+}
+
 function clearAccountState() {
   currentUser = null;
   currentProfile = null;
@@ -381,20 +393,11 @@ function clearAccountState() {
     openAdmin.hidden = true;
   }
 
-  if (adminApplications) {
-    adminApplications.innerHTML =
-      '<p class="empty-state">Войдите в аккаунт администратора.</p>';
-  }
+  clearAdminData();
 
   closeOverlay(adminOverlay);
   closeOverlay(accountOverlay);
 }
-
-/*
-  Эта функция каждый раз получает актуального пользователя
-  от Supabase и заново загружает его профиль.
-  Если проверка не проходит, доступ администратора закрывается.
-*/
 
 async function verifyAdminAccess() {
   if (!supabaseClient) {
@@ -416,12 +419,12 @@ async function verifyAdminAccess() {
     const profile = await loadProfile();
 
     if (!profile || profile.role !== "admin") {
+      currentProfile = profile || null;
       updateAdminAccess();
       return false;
     }
 
     updateAdminAccess();
-
     return true;
 
   } catch (error) {
@@ -435,14 +438,6 @@ async function verifyAdminAccess() {
 }
 
 /* USERNAME И ТЕХНИЧЕСКИЙ EMAIL */
-
-/*
-  Новые аккаунты используют @ikusami.com.
-  Старые аккаунты с @ikusami.local поддерживаются
-  при входе, чтобы не потерять доступ к ним.
-
-  В Supabase необходимо отключить Confirm email.
-*/
 
 function normalizeUsername(username) {
   return username.trim().toLowerCase();
@@ -465,12 +460,10 @@ function validUsername(username) {
 function openAuth(mode = "login") {
   authMode = mode;
 
-  authError.textContent = "";
+  if (authError) authError.textContent = "";
 
   authTitle.textContent =
-    mode === "signup"
-      ? "Создание аккаунта"
-      : "Вход в аккаунт";
+    mode === "signup" ? "Создание аккаунта" : "Вход в аккаунт";
 
   authDescription.textContent =
     mode === "signup"
@@ -488,7 +481,6 @@ function openAuth(mode = "login") {
       : "Нет аккаунта? Зарегистрироваться";
 
   authForm.reset();
-
   openOverlay(authOverlay);
 }
 
@@ -514,7 +506,6 @@ async function loadProfile() {
   }
 
   currentProfile = data;
-
   updateAdminAccess();
 
   return data;
@@ -525,11 +516,7 @@ async function loadProfile() {
 async function refreshAuthState() {
   if (!supabaseClient) {
     clearAccountState();
-
-    showToast(
-      "Не удалось загрузить Supabase. Проверь подключение к интернету."
-    );
-
+    showToast("Не удалось загрузить Supabase. Проверь подключение к интернету.");
     return;
   }
 
@@ -552,7 +539,6 @@ async function refreshAuthState() {
       await loadProfile();
     } catch (profileError) {
       console.error("Profile load error:", profileError);
-
       currentProfile = null;
       updateAdminAccess();
     }
@@ -585,7 +571,6 @@ accountButton?.addEventListener("click", async () => {
       currentProfile?.username || currentUser.email;
 
     updateAdminAccess();
-
     openOverlay(accountOverlay);
 
   } catch (error) {
@@ -619,23 +604,18 @@ authForm?.addEventListener("submit", async event => {
   if (!validUsername(username)) {
     authError.textContent =
       "Username: 3–24 символа, только латиница, цифры, точка, дефис и _.";
-
     return;
   }
 
   if (password.length < 8) {
     authError.textContent =
       "Пароль должен содержать минимум 8 символов.";
-
     return;
   }
 
   authSubmit.disabled = true;
-
   authSubmit.textContent =
-    authMode === "signup"
-      ? "Создаём аккаунт..."
-      : "Входим...";
+    authMode === "signup" ? "Создаём аккаунт..." : "Входим...";
 
   authError.textContent = "";
 
@@ -647,15 +627,11 @@ authForm?.addEventListener("submit", async event => {
         email: usernameEmail(username),
         password,
         options: {
-          data: {
-            username
-          }
+          data: { username }
         }
       });
 
-      if (result.error) {
-        throw result.error;
-      }
+      if (result.error) throw result.error;
 
       if (!result.data.session) {
         throw new Error(
@@ -669,11 +645,6 @@ authForm?.addEventListener("submit", async event => {
         password
       });
 
-      /*
-        Если вход по новому адресу не удался,
-        пробуем старый адрес @ikusami.local.
-      */
-
       if (
         result.error &&
         result.error.message?.includes("Invalid login credentials")
@@ -684,9 +655,7 @@ authForm?.addEventListener("submit", async event => {
         });
       }
 
-      if (result.error) {
-        throw result.error;
-      }
+      if (result.error) throw result.error;
     }
 
     currentUser = result.data.user;
@@ -697,7 +666,6 @@ authForm?.addEventListener("submit", async event => {
     closeOverlay(authOverlay);
 
     accountButton.textContent = "Мой аккаунт";
-
     updateAdminAccess();
 
     showToast(
@@ -755,7 +723,6 @@ async function renderMyApplications() {
   if (!data?.length) {
     myApplications.innerHTML =
       '<p class="empty-state">У тебя пока нет отправленных анкет.</p>';
-
     return;
   }
 
@@ -763,7 +730,6 @@ async function renderMyApplications() {
     <article class="application-item">
       <div class="application-item-head">
         <h3>${escapeHtml(item.server)}</h3>
-
         <span class="application-status ${escapeHtml(item.status)}">
           ${statusLabel(item.status)}
         </span>
@@ -812,11 +778,9 @@ async function submitApplicationToSupabase(application) {
     pendingApplication = application;
 
     closeOverlay(formOverlay);
-
     openAuth("login");
 
     showToast("Сначала войди или создай аккаунт.");
-
     return;
   }
 
@@ -838,20 +802,194 @@ async function submitApplicationToSupabase(application) {
       "Не удалось отправить анкету: " + error.message;
 
     pendingApplication = null;
-
     openOverlay(formOverlay);
-
     return;
   }
 
   pendingApplication = null;
-
   closeOverlay(formOverlay);
 
   showToast("Анкета отправлена администрации Ikusami.");
 }
 
-/* АДМИН-ПАНЕЛЬ */
+/* АДМИНКА — СТАТИСТИКА */
+
+function updateAdminStats(applications) {
+  const total = applications.length;
+  const pending = applications.filter(item => item.status === "pending").length;
+  const approved = applications.filter(item => item.status === "approved").length;
+  const rejected = applications.filter(item => item.status === "rejected").length;
+
+  if (statTotal) statTotal.textContent = total;
+  if (statPending) statPending.textContent = pending;
+  if (statApproved) statApproved.textContent = approved;
+  if (statRejected) statRejected.textContent = rejected;
+}
+
+/* ПОЛУЧЕНИЕ ИМЕНИ ИГРОКА */
+
+function getApplicationNickname(item) {
+  return (
+    item.data?.nickname ||
+    item.data?.discordNickname ||
+    item.data?.username ||
+    "Участник"
+  );
+}
+
+/* ФИЛЬТРАЦИЯ И СОРТИРОВКА */
+
+function getFilteredAdminApplications() {
+  const search = (adminSearch?.value || "").trim().toLowerCase();
+  const status = adminStatusFilter?.value || "all";
+  const server = adminServerFilter?.value || "all";
+  const sort = adminSort?.value || "newest";
+
+  let filtered = [...allAdminApplications];
+
+  if (status !== "all") {
+    filtered = filtered.filter(item => item.status === status);
+  }
+
+  if (server !== "all") {
+    filtered = filtered.filter(item => item.server === server);
+  }
+
+  if (search) {
+    filtered = filtered.filter(item => {
+      const searchable = [
+        item.server,
+        getApplicationNickname(item),
+        item.user_id,
+        item.id,
+        item.status,
+        item.data?.discordNickname
+      ].join(" ").toLowerCase();
+
+      return searchable.includes(search);
+    });
+  }
+
+  filtered.sort((a, b) => {
+    const dateA = new Date(a.created_at).getTime();
+    const dateB = new Date(b.created_at).getTime();
+
+    return sort === "oldest"
+      ? dateA - dateB
+      : dateB - dateA;
+  });
+
+  return filtered;
+}
+
+/* ОТОБРАЖЕНИЕ ЗАЯВОК */
+
+function renderFilteredAdminApplications() {
+  if (!adminApplications) return;
+
+  const filtered = getFilteredAdminApplications();
+
+  if (adminResultsCount) {
+    adminResultsCount.textContent =
+      `Показано ${filtered.length} из ${allAdminApplications.length} заявок`;
+  }
+
+  if (!filtered.length) {
+    adminApplications.innerHTML = `
+      <div class="empty-state admin-empty">
+        По выбранным параметрам заявок не найдено.
+      </div>
+    `;
+    return;
+  }
+
+  adminApplications.innerHTML = filtered.map(item => {
+    const nickname = getApplicationNickname(item);
+    const date = new Date(item.created_at).toLocaleString("ru-RU");
+    const applicationData = JSON.stringify(item.data || {}, null, 2);
+
+    return `
+      <article
+        class="admin-application"
+        data-application-id="${escapeHtml(item.id)}"
+      >
+        <div class="admin-card-top">
+          <div class="admin-card-title">
+            <h3>
+              ${escapeHtml(item.server)}
+              <span style="color:var(--muted)">/</span>
+              ${escapeHtml(nickname)}
+            </h3>
+            <p class="admin-card-subtitle">
+              Заявка участника Ikusami
+            </p>
+          </div>
+
+          <span class="application-status ${escapeHtml(item.status)}">
+            ${statusLabel(item.status)}
+          </span>
+        </div>
+
+        <div class="admin-card-meta">
+          <span class="admin-meta-chip">Дата: ${escapeHtml(date)}</span>
+          <span class="admin-meta-chip">ID: ${escapeHtml(item.id)}</span>
+        </div>
+
+        <p>Пользователь: ${escapeHtml(item.user_id)}</p>
+
+        <details class="admin-details">
+          <summary>Посмотреть ответы анкеты</summary>
+          <pre>${escapeHtml(applicationData)}</pre>
+        </details>
+
+        <label class="admin-comment-label" for="comment-${escapeHtml(item.id)}">
+          Комментарий администрации
+        </label>
+
+        <textarea
+          id="comment-${escapeHtml(item.id)}"
+          class="admin-comment"
+          placeholder="Напиши комментарий к решению..."
+        >${escapeHtml(item.admin_comment || "")}</textarea>
+
+        <div class="admin-actions">
+          <button
+            class="admin-decision approve"
+            data-status="approved"
+            type="button"
+          >
+            Одобрить
+          </button>
+
+          <button
+            class="admin-decision reject"
+            data-status="rejected"
+            type="button"
+          >
+            Отклонить
+          </button>
+
+          <button
+            class="admin-decision"
+            data-status="pending"
+            type="button"
+          >
+            На рассмотрение
+          </button>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+/* ФИЛЬТРЫ */
+
+adminSearch?.addEventListener("input", renderFilteredAdminApplications);
+adminStatusFilter?.addEventListener("change", renderFilteredAdminApplications);
+adminServerFilter?.addEventListener("change", renderFilteredAdminApplications);
+adminSort?.addEventListener("change", renderFilteredAdminApplications);
+
+/* ОТКРЫТИЕ АДМИН-ПАНЕЛИ */
 
 openAdmin?.addEventListener("click", async () => {
   openAdmin.disabled = true;
@@ -861,7 +999,7 @@ openAdmin?.addEventListener("click", async () => {
 
     if (!isAdmin) {
       closeOverlay(adminOverlay);
-      showToast("Доступ запрещён. Эта панель доступна только администраторам.");
+      showToast("Доступ запрещён. Панель доступна только администраторам.");
       return;
     }
 
@@ -882,109 +1020,83 @@ openAdmin?.addEventListener("click", async () => {
   }
 });
 
-/* ЗАГРУЗКА ЗАЯВОК ДЛЯ АДМИНА */
+/* ОБНОВЛЕНИЕ ЗАЯВОК */
 
 async function renderAdminApplications() {
-  if (!adminApplications) return;
+  if (!adminApplications || adminLoadInProgress) return;
 
-  const isAdmin = await verifyAdminAccess();
+  adminLoadInProgress = true;
 
-  if (!isAdmin) {
+  try {
+    const isAdmin = await verifyAdminAccess();
+
+    if (!isAdmin) {
+      clearAdminData();
+      closeOverlay(adminOverlay);
+      showToast("У тебя нет прав администратора.");
+      return;
+    }
+
     adminApplications.innerHTML =
-      '<p class="empty-state">Доступ запрещён.</p>';
+      '<p class="empty-state">Загружаем заявки...</p>';
 
-    closeOverlay(adminOverlay);
+    const { data, error } = await supabaseClient
+      .from("applications")
+      .select("id, user_id, server, data, status, admin_comment, created_at")
+      .order("created_at", { ascending: false });
 
-    showToast("У тебя нет прав администратора.");
+    if (error) {
+      adminApplications.innerHTML =
+        `<p class="empty-state">${escapeHtml(error.message)}</p>`;
+      throw error;
+    }
 
-    return;
+    allAdminApplications = data || [];
+
+    updateAdminStats(allAdminApplications);
+    renderFilteredAdminApplications();
+
+    if (adminLastUpdated) {
+      adminLastUpdated.textContent =
+        "Обновлено: " + new Date().toLocaleTimeString("ru-RU");
+    }
+
+  } catch (error) {
+    console.error("Admin applications loading error:", error);
+
+    if (adminApplications) {
+      adminApplications.innerHTML =
+        `<p class="empty-state">Не удалось загрузить заявки: ${escapeHtml(error.message)}</p>`;
+    }
+
+  } finally {
+    adminLoadInProgress = false;
   }
-
-  adminApplications.innerHTML =
-    '<p class="empty-state">Загрузка заявок...</p>';
-
-  const { data, error } = await supabaseClient
-    .from("applications")
-    .select("id, user_id, server, data, status, admin_comment, created_at")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    adminApplications.innerHTML =
-      `<p class="empty-state">${escapeHtml(error.message)}</p>`;
-
-    return;
-  }
-
-  if (!data?.length) {
-    adminApplications.innerHTML =
-      '<p class="empty-state">Пока нет заявок.</p>';
-
-    return;
-  }
-
-  adminApplications.innerHTML = data.map(item => `
-    <article
-      class="admin-application"
-      data-application-id="${escapeHtml(item.id)}"
-    >
-      <div class="application-item-head">
-        <h3>
-          ${escapeHtml(item.server)}
-          ·
-          ${escapeHtml(
-            item.data?.nickname ||
-            item.data?.discordNickname ||
-            "Участник"
-          )}
-        </h3>
-
-        <span class="application-status ${escapeHtml(item.status)}">
-          ${statusLabel(item.status)}
-        </span>
-      </div>
-
-      <p>Пользователь: ${escapeHtml(item.user_id)}</p>
-
-      <p>
-        Дата:
-        ${new Date(item.created_at).toLocaleString("ru-RU")}
-      </p>
-
-      <pre>${escapeHtml(JSON.stringify(item.data, null, 2))}</pre>
-
-      <textarea
-        class="admin-comment"
-        placeholder="Комментарий администрации"
-      >${escapeHtml(item.admin_comment || "")}</textarea>
-
-      <div class="admin-actions">
-        <button
-          class="admin-decision approve"
-          data-status="approved"
-          type="button"
-        >
-          Одобрить
-        </button>
-
-        <button
-          class="admin-decision reject"
-          data-status="rejected"
-          type="button"
-        >
-          Отклонить
-        </button>
-
-        <button
-          class="admin-decision"
-          data-status="pending"
-          type="button"
-        >
-          Оставить на рассмотрении
-        </button>
-      </div>
-    </article>
-  `).join("");
 }
+
+/* КНОПКА ОБНОВЛЕНИЯ */
+
+refreshAdmin?.addEventListener("click", async () => {
+  refreshAdmin.disabled = true;
+  refreshAdmin.textContent = "Обновляем...";
+
+  try {
+    const isAdmin = await verifyAdminAccess();
+
+    if (!isAdmin) {
+      closeOverlay(adminOverlay);
+      showToast("Доступ запрещён.");
+      return;
+    }
+
+    await renderAdminApplications();
+    showToast("Список заявок обновлён.");
+
+  } finally {
+    refreshAdmin.disabled = false;
+    refreshAdmin.textContent = "Обновить";
+  }
+});
 
 /* ОБРАБОТКА РЕШЕНИЙ АДМИНИСТРАТОРА */
 
@@ -995,6 +1107,9 @@ adminApplications?.addEventListener("click", async event => {
 
   button.disabled = true;
 
+  const card = button.closest("[data-application-id]");
+  const id = card?.dataset.applicationId;
+
   try {
     const isAdmin = await verifyAdminAccess();
 
@@ -1003,9 +1118,6 @@ adminApplications?.addEventListener("click", async event => {
       closeOverlay(adminOverlay);
       return;
     }
-
-    const card = button.closest("[data-application-id]");
-    const id = card?.dataset.applicationId;
 
     if (!id) {
       showToast("Не удалось определить заявку.");
@@ -1030,47 +1142,34 @@ adminApplications?.addEventListener("click", async event => {
 
     if (error) {
       console.error("Ошибка обновления заявки:", error);
-
-      showToast(
-        "Не удалось обновить заявку: " + error.message
-      );
-
+      showToast("Не удалось обновить заявку: " + error.message);
       return;
     }
 
     if (!data) {
       console.error(
-        "Supabase не обновил ни одной строки. Возможно, UPDATE запрещён политикой RLS.",
+        "Supabase не обновил ни одной строки. Проверь UPDATE-политику RLS.",
         { applicationId: id, requestedStatus: newStatus }
       );
 
       showToast(
         "Заявка не обновлена. Проверь UPDATE-политику RLS в Supabase."
       );
-
       return;
     }
 
     if (data.status !== newStatus) {
-      showToast(
-        "Supabase вернул неожиданный статус: " + data.status
-      );
-
+      showToast("Supabase вернул неожиданный статус: " + data.status);
       await renderAdminApplications();
-
       return;
     }
 
-    await renderAdminApplications();
-
     showToast("Статус заявки успешно изменён.");
+    await renderAdminApplications();
 
   } catch (error) {
     console.error("Ошибка при изменении статуса:", error);
-
-    showToast(
-      "Ошибка при изменении статуса: " + error.message
-    );
+    showToast("Ошибка при изменении статуса: " + error.message);
 
   } finally {
     button.disabled = false;
@@ -1093,7 +1192,6 @@ logoutButton?.addEventListener("click", async () => {
   }
 
   clearAccountState();
-
   showToast("Ты вышел из аккаунта.");
 });
 
@@ -1101,7 +1199,6 @@ logoutButton?.addEventListener("click", async () => {
 
 function validateAge(value) {
   const age = Number(value);
-
   return Number.isInteger(age) && age >= 1 && age <= 99;
 }
 
@@ -1111,7 +1208,6 @@ applicationForm?.addEventListener("submit", async event => {
   event.preventDefault();
 
   const formData = new FormData(applicationForm);
-
   const data = Object.fromEntries(formData.entries());
 
   formError.textContent = "";
@@ -1137,21 +1233,14 @@ applicationForm?.addEventListener("submit", async event => {
       "staffAdvantages"
     ];
 
-    if (
-      requiredFields.some(key =>
-        !String(data[key] || "").trim()
-      )
-    ) {
-      formError.textContent =
-        "Заполни все обязательные поля анкеты.";
-
+    if (requiredFields.some(key => !String(data[key] || "").trim())) {
+      formError.textContent = "Заполни все обязательные поля анкеты.";
       return;
     }
 
     if (data.rules !== "Да, полностью ознакомлен") {
       formError.textContent =
         "Для подачи заявки необходимо ознакомиться с правилами сервера.";
-
       return;
     }
 
@@ -1184,14 +1273,9 @@ applicationForm?.addEventListener("submit", async event => {
       "reason"
     ];
 
-    if (
-      requiredFields.some(key =>
-        !String(data[key] || "").trim()
-      )
-    ) {
+    if (requiredFields.some(key => !String(data[key] || "").trim())) {
       formError.textContent =
         "Поля, отмеченные звёздочкой (*), должны быть заполнены!";
-
       return;
     }
 
@@ -1233,19 +1317,12 @@ if (supabaseClient) {
       accountButton.textContent = "Мой аккаунт";
     }
 
-    /*
-      Обновляем профиль после завершения auth callback.
-      Это позволяет не выполнять запрос Supabase внутри callback.
-    */
     Promise.resolve().then(() => refreshAuthState());
   });
 
   refreshAuthState();
 
 } else {
-  console.error(
-    "Supabase SDK не загружен. Проверь подключение CDN."
-  );
-
+  console.error("Supabase SDK не загружен. Проверь подключение CDN.");
   clearAccountState();
 }
