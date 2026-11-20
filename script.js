@@ -1,3 +1,4 @@
+
 /* IKUSAMI — Supabase integration.
    Перед регистрацией отключи Confirm email в настройках Supabase.
    Никогда не добавляй Secret/service_role key в этот файл.
@@ -16,7 +17,7 @@ const continueApplication = document.getElementById("continueApplication");
 const selectedServer = document.getElementById("selectedServer");
 
 const applicationForm = document.getElementById("applicationForm");
-const formGrid = applicationForm.querySelector(".form-grid");
+const formGrid = applicationForm?.querySelector(".form-grid");
 const formError = document.getElementById("formError");
 const toast = document.getElementById("toast");
 
@@ -49,7 +50,7 @@ navLinks.forEach(link => {
   });
 });
 
-document.querySelector(".brand").addEventListener("click", event => {
+document.querySelector(".brand")?.addEventListener("click", event => {
   event.preventDefault();
   showPage("application");
 });
@@ -91,10 +92,15 @@ function openServerPicker() {
 function openApplicationForm(server) {
   currentServer = server;
 
-  selectedServer.textContent = server;
+  if (selectedServer) {
+    selectedServer.textContent = server;
+  }
 
   applicationForm.reset();
-  formError.textContent = "";
+
+  if (formError) {
+    formError.textContent = "";
+  }
 
   renderApplicationForm(server);
 
@@ -102,9 +108,8 @@ function openApplicationForm(server) {
   openOverlay(formOverlay);
 }
 
-createTicket.addEventListener("click", openNotice);
-
-continueApplication.addEventListener("click", openServerPicker);
+createTicket?.addEventListener("click", openNotice);
+continueApplication?.addEventListener("click", openServerPicker);
 
 /* ВЫБОР РАЗДЕЛА */
 
@@ -239,10 +244,7 @@ function renderStaffForm() {
       { value: "Более 4 часов", label: "Более 4 часов в день" }
     ])}
 
-    ${selectField("Твой часовой пояс", "staffTimezone", timezoneOptions().map(item => ({
-      value: item.value,
-      label: item.label
-    })))}
+    ${selectField("Твой часовой пояс", "staffTimezone", timezoneOptions())}
 
     ${textarea("Почему ты хочешь попасть в команду Ikusami?", "staffReason", "Расскажи о своей мотивации...")}
 
@@ -300,6 +302,8 @@ document.addEventListener("keydown", event => {
 /* УВЕДОМЛЕНИЯ */
 
 function showToast(message) {
+  if (!toast) return;
+
   toast.textContent = message;
   toast.classList.add("show");
 
@@ -347,10 +351,26 @@ let currentUser = null;
 let currentProfile = null;
 let pendingApplication = null;
 
-/* USERNAME */
+/* USERNAME И ТЕХНИЧЕСКИЙ EMAIL */
+
+/*
+  Новые аккаунты используют @ikusami.com.
+  Старые аккаунты с @ikusami.local поддерживаются
+  при входе, чтобы не потерять доступ к ним.
+
+  В Supabase необходимо отключить Confirm email.
+*/
+
+function normalizeUsername(username) {
+  return username.trim().toLowerCase();
+}
 
 function usernameEmail(username) {
-  return `${username.trim().toLowerCase()}@ikusami.local`;
+  return `${normalizeUsername(username)}@ikusami.com`;
+}
+
+function legacyUsernameEmail(username) {
+  return `${normalizeUsername(username)}@ikusami.local`;
 }
 
 function validUsername(username) {
@@ -411,7 +431,9 @@ async function loadProfile() {
 
 async function refreshAuthState() {
   if (!supabaseClient) {
-    accountButton.textContent = "Войти";
+    if (accountButton) {
+      accountButton.textContent = "Войти";
+    }
 
     showToast(
       "Не удалось загрузить Supabase. Проверь подключение к интернету."
@@ -428,19 +450,25 @@ async function refreshAuthState() {
   if (currentUser) {
     try {
       await loadProfile();
-      accountButton.textContent = "Мой аккаунт";
+
+      if (accountButton) {
+        accountButton.textContent = "Мой аккаунт";
+      }
     } catch (error) {
       console.error("Profile load error:", error);
-      accountButton.textContent = "Аккаунт";
+
+      if (accountButton) {
+        accountButton.textContent = "Аккаунт";
+      }
     }
-  } else {
+  } else if (accountButton) {
     accountButton.textContent = "Войти";
   }
 }
 
 /* ЛИЧНЫЙ КАБИНЕТ */
 
-accountButton.addEventListener("click", async () => {
+accountButton?.addEventListener("click", async () => {
   if (!currentUser) {
     openAuth("login");
     return;
@@ -465,17 +493,13 @@ accountButton.addEventListener("click", async () => {
   }
 });
 
-authSwitch.addEventListener("click", () => {
+authSwitch?.addEventListener("click", () => {
   openAuth(authMode === "login" ? "signup" : "login");
 });
 
-/* РЕГИСТРАЦИЯ И ВХОД
-   Username используется как внутренний технический email.
-   Supabase: Authentication -> Sign In / Providers -> Email
-   Confirm email должен быть выключен.
-*/
+/* РЕГИСТРАЦИЯ И ВХОД */
 
-authForm.addEventListener("submit", async event => {
+authForm?.addEventListener("submit", async event => {
   event.preventDefault();
 
   if (!supabaseClient) {
@@ -485,13 +509,11 @@ authForm.addEventListener("submit", async event => {
 
   const form = new FormData(authForm);
 
-  const username = String(
-    form.get("username") || ""
-  ).trim();
-
-  const password = String(
-    form.get("password") || ""
+  const username = normalizeUsername(
+    String(form.get("username") || "")
   );
+
+  const password = String(form.get("password") || "");
 
   if (!validUsername(username)) {
     authError.textContent =
@@ -525,7 +547,7 @@ authForm.addEventListener("submit", async event => {
         password,
         options: {
           data: {
-            username: username.toLowerCase()
+            username
           }
         }
       });
@@ -544,6 +566,21 @@ authForm.addEventListener("submit", async event => {
         email: usernameEmail(username),
         password
       });
+
+      /*
+        Если вход по новому адресу не удался,
+        пробуем старый адрес @ikusami.local.
+      */
+
+      if (
+        result.error &&
+        result.error.message?.includes("Invalid login credentials")
+      ) {
+        result = await supabaseClient.auth.signInWithPassword({
+          email: legacyUsernameEmail(username),
+          password
+        });
+      }
 
       if (result.error) {
         throw result.error;
@@ -575,7 +612,8 @@ authForm.addEventListener("submit", async event => {
 
     authError.textContent =
       message.includes("already registered") ||
-      message.includes("already been registered")
+      message.includes("already been registered") ||
+      message.includes("User already registered")
         ? "Этот username уже занят. Попробуй войти."
         : message.includes("Invalid login credentials")
           ? "Неверный username или пароль."
@@ -617,7 +655,7 @@ async function renderMyApplications() {
       <div class="application-item-head">
         <h3>${escapeHtml(item.server)}</h3>
 
-        <span class="application-status ${item.status}">
+        <span class="application-status ${escapeHtml(item.status)}">
           ${statusLabel(item.status)}
         </span>
       </div>
@@ -706,7 +744,7 @@ async function submitApplicationToSupabase(application) {
 
 /* АДМИН-ПАНЕЛЬ */
 
-openAdmin.addEventListener("click", async () => {
+openAdmin?.addEventListener("click", async () => {
   closeOverlay(accountOverlay);
 
   openOverlay(adminOverlay);
@@ -742,7 +780,7 @@ async function renderAdminApplications() {
   adminApplications.innerHTML = data.map(item => `
     <article
       class="admin-application"
-      data-application-id="${item.id}"
+      data-application-id="${escapeHtml(item.id)}"
     >
       <div class="application-item-head">
         <h3>
@@ -755,7 +793,7 @@ async function renderAdminApplications() {
           )}
         </h3>
 
-        <span class="application-status ${item.status}">
+        <span class="application-status ${escapeHtml(item.status)}">
           ${statusLabel(item.status)}
         </span>
       </div>
@@ -805,7 +843,7 @@ async function renderAdminApplications() {
 
 /* ОБРАБОТКА РЕШЕНИЙ АДМИНИСТРАТОРА */
 
-adminApplications.addEventListener("click", async event => {
+adminApplications?.addEventListener("click", async event => {
   const button = event.target.closest("button[data-status]");
 
   if (!button) return;
@@ -842,7 +880,7 @@ adminApplications.addEventListener("click", async event => {
 
 /* ВЫХОД ИЗ АККАУНТА */
 
-logoutButton.addEventListener("click", async () => {
+logoutButton?.addEventListener("click", async () => {
   const { error } = await supabaseClient.auth.signOut();
 
   if (error) {
@@ -870,7 +908,7 @@ function validateAge(value) {
 
 /* ОТПРАВКА АНКЕТЫ */
 
-applicationForm.addEventListener("submit", async event => {
+applicationForm?.addEventListener("submit", async event => {
   event.preventDefault();
 
   const formData = new FormData(applicationForm);
@@ -986,7 +1024,10 @@ if (supabaseClient) {
 
     if (!currentUser) {
       currentProfile = null;
-      accountButton.textContent = "Войти";
+
+      if (accountButton) {
+        accountButton.textContent = "Войти";
+      }
     }
   });
 
@@ -996,4 +1037,4 @@ if (supabaseClient) {
   console.error(
     "Supabase SDK не загружен. Проверь подключение CDN."
   );
-}і
+}
