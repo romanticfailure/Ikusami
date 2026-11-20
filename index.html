@@ -18,7 +18,6 @@
 
   <header class="topbar-wrap">
     <div class="topbar shell">
-
       <a class="brand" href="#" data-page="application">Ikusami<span>.</span></a>
 
       <nav class="nav">
@@ -29,23 +28,16 @@
 
       <div class="topbar-actions">
         <button class="account-button" id="accountButton" type="button">Войти</button>
-        <a class="discord-button"
-           href="https://discord.gg/FFc5VaVrdD"
-           target="_blank"
-           rel="noopener noreferrer">
+        <a class="discord-button" href="https://discord.gg/FFc5VaVrdD" target="_blank" rel="noopener noreferrer">
           Discord <span>↗</span>
         </a>
       </div>
-
     </div>
   </header>
 
   <main class="shell">
 
-    <!-- ГЛАВНАЯ -->
-
     <section id="page-application" class="page active">
-
       <div class="hero">
         <div class="eyebrow">
           <span class="status-dot"></span>
@@ -67,7 +59,6 @@
       </div>
 
       <div class="feature-grid">
-
         <article class="feature-card">
           <span class="card-number">01 / COMMUNITY</span>
           <h3>Наше сообщество</h3>
@@ -85,7 +76,6 @@
           <h3>Простой процесс</h3>
           <p>Заполни анкету и дождись решения администрации клана.</p>
         </article>
-
       </div>
 
       <div class="community-card">
@@ -95,20 +85,13 @@
           <p>Присоединяйся к нашему сообществу и следи за новостями.</p>
         </div>
 
-        <a href="https://discord.gg/FFc5VaVrdD"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="secondary-button">
+        <a href="https://discord.gg/FFc5VaVrdD" target="_blank" rel="noopener noreferrer" class="secondary-button">
           Перейти <span>↗</span>
         </a>
       </div>
-
     </section>
 
-    <!-- ИНФОРМАЦИЯ -->
-
     <section id="page-information" class="page subpage">
-
       <div class="subpage-heading">
         <span class="eyebrow">01 / INFORMATION</span>
         <h1>Информация<span>.</span></h1>
@@ -128,7 +111,6 @@
       <div class="content-card">
         <span class="card-number">КАК ПОПАСТЬ В КЛАН</span>
         <h2>Всего несколько шагов.</h2>
-
         <ol class="steps-list">
           <li>Нажми кнопку «Создать тикет».</li>
           <li>Выбери нужный раздел.</li>
@@ -136,13 +118,9 @@
           <li>Дождись рассмотрения заявки администрацией.</li>
         </ol>
       </div>
-
     </section>
 
-    <!-- ПРАВИЛА DISCORD -->
-
     <section id="page-rules" class="page subpage rules-page">
-
       <div class="rules-header">
         <span class="eyebrow">IKUSAMI / COMMUNITY GUIDELINES</span>
         <h1>Правила<span>.</span></h1>
@@ -150,7 +128,6 @@
       </div>
 
       <div class="rules-container">
-
         <div class="rules-container-heading">
           <div class="rules-heading-mark"></div>
           <div>
@@ -167,7 +144,6 @@
             <span class="rules-index">01</span>
             <h3>Общие правила</h3>
           </div>
-
           <ol class="rules-items">
             <li>Незнание правил не освобождает от ответственности.</li>
             <li>Заходя на наш Discord-сервер, вы автоматически соглашаетесь с данными правилами.</li>
@@ -183,7 +159,6 @@
             <span class="rules-index">02</span>
             <h3>Правила чата</h3>
           </div>
-
           <ol class="rules-items">
             <li>Запрещено любое мошенничество.</li>
             <li>Запрещено использовать чат в качестве торговой площадки.</li>
@@ -203,7 +178,6 @@
             <span class="rules-index">03</span>
             <h3>Правила голосовых каналов</h3>
           </div>
-
           <ol class="rules-items">
             <li>Не издавайте раздражающих звуков (шум, дыхание в микрофон, скрежет и т.д.).</li>
             <li>Старайтесь избегать фоновых шумов (разговоров, телевизора, музыки и прочего).</li>
@@ -216,9 +190,7 @@
           <span class="status-dot"></span>
           <p>Спасибо, что помогаешь сохранять комфортную атмосферу в Ikusami.</p>
         </div>
-
       </div>
-
     </section>
 
   </main>
@@ -228,182 +200,116 @@
     <span>© 2026 IKUSAMI COMMUNITY</span>
   </footer>
 
-  <!-- ПРЕДУПРЕЖДЕНИЕ -->
-
   <div class="overlay" id="noticeOverlay">
     <div class="modal">
-
       <button class="close-button" data-close="noticeOverlay">×</button>
-
       <span class="eyebrow">APPLICATION / NOTICE</span>
       <h2>Перед началом</h2>
-
       <p class="modal-description">
         Тикеты, не заполненные по установленной анкете,
         не рассматриваются администрацией.
       </p>
-
       <button class="primary-button full-button" id="continueApplication">
         Понятно, продолжить <span>→</span>
       </button>
-
     </div>
   </div>
 
-  <!-- ВЫБОР РАЗДЕЛА -->
-
   <div class="overlay" id="serverOverlay">
     <div class="modal">
-
       <button class="close-button" data-close="serverOverlay">×</button>
-
       <span class="eyebrow">APPLICATION / SECTION</span>
       <h2>Выбери раздел</h2>
       <p class="modal-description">Выбери, куда хочешь подать заявку.</p>
 
       <div class="server-list">
-        <button class="server-option" data-server="HolyWorld">
-          <span>HolyWorld</span><span>→</span>
-        </button>
-
-        <button class="server-option" data-server="FunTime">
-          <span>FunTime</span><span>→</span>
-        </button>
-
-        <button class="server-option" data-server="SpaceTime">
-          <span>SpaceTime</span><span>→</span>
-        </button>
-
-        <button class="server-option" data-server="Discord Staff">
-          <span>Discord Staff</span><span>→</span>
-        </button>
+        <button class="server-option" data-server="HolyWorld"><span>HolyWorld</span><span>→</span></button>
+        <button class="server-option" data-server="FunTime"><span>FunTime</span><span>→</span></button>
+        <button class="server-option" data-server="SpaceTime"><span>SpaceTime</span><span>→</span></button>
+        <button class="server-option" data-server="Discord Staff"><span>Discord Staff</span><span>→</span></button>
       </div>
-
     </div>
   </div>
 
-  <!-- АНКЕТА -->
-
   <div class="overlay" id="formOverlay">
     <div class="modal form-modal">
-
       <button class="close-button" data-close="formOverlay">×</button>
-
       <span class="eyebrow">APPLICATION / FORM</span>
       <h2>Анкета игрока</h2>
-
-      <p class="modal-description">
-        Раздел: <strong id="selectedServer">—</strong>
-      </p>
+      <p class="modal-description">Раздел: <strong id="selectedServer">—</strong></p>
 
       <form id="applicationForm" novalidate>
-
         <div class="form-grid">
-
           <label class="form-field">
             <span>Никнейм Minecraft <b>*</b></span>
             <input name="nickname" type="text" placeholder="Твой никнейм">
           </label>
-
           <label class="form-field">
             <span>Возраст <b>*</b></span>
             <input name="age" type="number" min="1" max="99" placeholder="Возраст">
           </label>
-
           <label class="form-field">
             <span>Опыт игры <b>*</b></span>
             <input name="experience" type="text" placeholder="Например, 2 года">
           </label>
-
           <label class="form-field">
             <span>Онлайн в день <b>*</b></span>
             <input name="online" type="text" placeholder="Например, 4–6 часов">
           </label>
-
           <label class="form-field">
             <span>Предыдущие кланы <b>*</b></span>
             <input name="clans" type="text" placeholder="Укажи кланы или напиши «Нет»">
           </label>
-
           <label class="form-field">
             <span>Ваш донат <b>*</b></span>
             <input name="donate" type="text">
           </label>
-
           <label class="form-field">
             <span>Оценка своего PvP <b>*</b></span>
             <select name="pvp">
               <option value="">Выбери оценку</option>
-              <option value="1">1 / 10</option>
-              <option value="2">2 / 10</option>
-              <option value="3">3 / 10</option>
-              <option value="4">4 / 10</option>
-              <option value="5">5 / 10</option>
-              <option value="6">6 / 10</option>
-              <option value="7">7 / 10</option>
-              <option value="8">8 / 10</option>
-              <option value="9">9 / 10</option>
-              <option value="10">10 / 10</option>
+              <option value="1">1 / 10</option><option value="2">2 / 10</option>
+              <option value="3">3 / 10</option><option value="4">4 / 10</option>
+              <option value="5">5 / 10</option><option value="6">6 / 10</option>
+              <option value="7">7 / 10</option><option value="8">8 / 10</option>
+              <option value="9">9 / 10</option><option value="10">10 / 10</option>
             </select>
           </label>
-
           <label class="form-field">
             <span>Часовой пояс относительно МСК <b>*</b></span>
             <select name="timezone">
               <option value="">Выбери часовой пояс</option>
-              <option value="-12">МСК −12</option>
-              <option value="-11">МСК −11</option>
-              <option value="-10">МСК −10</option>
-              <option value="-9">МСК −9</option>
-              <option value="-8">МСК −8</option>
-              <option value="-7">МСК −7</option>
-              <option value="-6">МСК −6</option>
-              <option value="-5">МСК −5</option>
-              <option value="-4">МСК −4</option>
-              <option value="-3">МСК −3</option>
-              <option value="-2">МСК −2</option>
-              <option value="-1">МСК −1</option>
-              <option value="0">МСК ±0</option>
-              <option value="1">МСК +1</option>
-              <option value="2">МСК +2</option>
-              <option value="3">МСК +3</option>
-              <option value="4">МСК +4</option>
-              <option value="5">МСК +5</option>
-              <option value="6">МСК +6</option>
-              <option value="7">МСК +7</option>
-              <option value="8">МСК +8</option>
-              <option value="9">МСК +9</option>
-              <option value="10">МСК +10</option>
-              <option value="11">МСК +11</option>
+              <option value="-12">МСК −12</option><option value="-11">МСК −11</option>
+              <option value="-10">МСК −10</option><option value="-9">МСК −9</option>
+              <option value="-8">МСК −8</option><option value="-7">МСК −7</option>
+              <option value="-6">МСК −6</option><option value="-5">МСК −5</option>
+              <option value="-4">МСК −4</option><option value="-3">МСК −3</option>
+              <option value="-2">МСК −2</option><option value="-1">МСК −1</option>
+              <option value="0">МСК ±0</option><option value="1">МСК +1</option>
+              <option value="2">МСК +2</option><option value="3">МСК +3</option>
+              <option value="4">МСК +4</option><option value="5">МСК +5</option>
+              <option value="6">МСК +6</option><option value="7">МСК +7</option>
+              <option value="8">МСК +8</option><option value="9">МСК +9</option>
+              <option value="10">МСК +10</option><option value="11">МСК +11</option>
               <option value="12">МСК +12</option>
             </select>
           </label>
-
           <label class="form-field full-field">
             <span>Почему хочешь вступить к нам? <b>*</b></span>
             <textarea name="reason" rows="3" placeholder="Расскажи о своей мотивации..."></textarea>
           </label>
-
           <label class="form-field full-field">
             <span>Дополнительная информация</span>
             <textarea name="extra" rows="3" placeholder="Необязательно"></textarea>
           </label>
-
         </div>
 
         <p class="form-error" id="formError" role="alert"></p>
-
-        <button class="primary-button full-button" type="submit">
-          Отправить анкету <span>→</span>
-        </button>
-
+        <button class="primary-button full-button" type="submit">Отправить анкету <span>→</span></button>
         <p class="form-footnote">* Обязательные поля</p>
-
       </form>
     </div>
   </div>
-
-  <!-- АВТОРИЗАЦИЯ -->
 
   <div class="overlay" id="authOverlay">
     <div class="modal auth-modal">
@@ -417,12 +323,10 @@
           <span>Discord username</span>
           <input name="username" type="text" minlength="3" maxlength="24" autocomplete="username" placeholder="Твой username" required>
         </label>
-
         <label class="form-field">
           <span>Пароль</span>
           <input name="password" type="password" minlength="8" autocomplete="current-password" placeholder="Не менее 8 символов" required>
         </label>
-
         <p class="form-error" id="authError" role="alert"></p>
         <button class="primary-button full-button" id="authSubmit" type="submit">Войти <span>→</span></button>
       </form>
@@ -431,8 +335,6 @@
       <p class="auth-note">Почта не используется. Восстановление забытого пароля без почты или телефона недоступно.</p>
     </div>
   </div>
-
-  <!-- ЛИЧНЫЙ КАБИНЕТ -->
 
   <div class="overlay" id="accountOverlay">
     <div class="modal account-modal">
@@ -455,16 +357,84 @@
     </div>
   </div>
 
-  <!-- АДМИН-ПАНЕЛЬ -->
+  <!-- ОБНОВЛЁННАЯ АДМИН-ПАНЕЛЬ -->
 
   <div class="overlay" id="adminOverlay">
     <div class="modal admin-modal">
       <button class="close-button" data-close="adminOverlay" type="button">×</button>
-      <span class="eyebrow">IKUSAMI / MODERATION</span>
-      <h2>Заявки участников</h2>
-      <p class="modal-description">Просмотр и обработка отправленных анкет.</p>
-      <div id="adminApplications" class="application-list">
-        <p class="empty-state">Загрузка...</p>
+
+      <div class="admin-heading">
+        <div>
+          <span class="eyebrow">IKUSAMI / CONTROL CENTER</span>
+          <h2>Панель управления</h2>
+          <p class="modal-description">Заявки участников и управление набором в клан.</p>
+        </div>
+        <div class="admin-live">
+          <span class="status-dot"></span>
+          ADMIN ACCESS
+        </div>
+      </div>
+
+      <div class="admin-stats" id="adminStats">
+        <div class="admin-stat">
+          <span class="admin-stat-label">Всего заявок</span>
+          <strong id="statTotal">—</strong>
+          <span class="admin-stat-foot">Все обращения</span>
+        </div>
+        <div class="admin-stat">
+          <span class="admin-stat-label">На рассмотрении</span>
+          <strong id="statPending">—</strong>
+          <span class="admin-stat-foot">Ожидают решения</span>
+        </div>
+        <div class="admin-stat">
+          <span class="admin-stat-label">Одобрено</span>
+          <strong id="statApproved">—</strong>
+          <span class="admin-stat-foot">Принятые заявки</span>
+        </div>
+        <div class="admin-stat">
+          <span class="admin-stat-label">Отклонено</span>
+          <strong id="statRejected">—</strong>
+          <span class="admin-stat-foot">Отказанные заявки</span>
+        </div>
+      </div>
+
+      <div class="admin-toolbar">
+        <div class="admin-search-wrap">
+          <input id="adminSearch" class="admin-search" type="search" placeholder="Поиск по нику, серверу или ID...">
+        </div>
+
+        <div class="admin-filter-row">
+          <select id="adminStatusFilter" class="admin-filter">
+            <option value="all">Все статусы</option>
+            <option value="pending">На рассмотрении</option>
+            <option value="approved">Одобрено</option>
+            <option value="rejected">Отклонено</option>
+          </select>
+
+          <select id="adminServerFilter" class="admin-filter">
+            <option value="all">Все разделы</option>
+            <option value="HolyWorld">HolyWorld</option>
+            <option value="FunTime">FunTime</option>
+            <option value="SpaceTime">SpaceTime</option>
+            <option value="Discord Staff">Discord Staff</option>
+          </select>
+
+          <select id="adminSort" class="admin-filter">
+            <option value="newest">Сначала новые</option>
+            <option value="oldest">Сначала старые</option>
+          </select>
+
+          <button class="admin-refresh" id="refreshAdmin" type="button">Обновить</button>
+        </div>
+      </div>
+
+      <div class="admin-results-line">
+        <span id="adminResultsCount">Загрузка заявок...</span>
+        <span id="adminLastUpdated"></span>
+      </div>
+
+      <div id="adminApplications" class="application-list admin-list">
+        <p class="empty-state">Загрузка заявок...</p>
       </div>
     </div>
   </div>
