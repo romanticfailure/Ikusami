@@ -351,6 +351,89 @@ let currentUser = null;
 let currentProfile = null;
 let pendingApplication = null;
 
+/* УПРАВЛЕНИЕ ДОСТУПОМ АДМИНИСТРАТОРА */
+
+function updateAdminAccess() {
+  const isAdmin =
+    Boolean(currentUser) &&
+    currentProfile?.role === "admin";
+
+  if (openAdmin) {
+    openAdmin.hidden = !isAdmin;
+  }
+
+  if (!isAdmin && adminOverlay?.classList.contains("open")) {
+    closeOverlay(adminOverlay);
+  }
+
+  return isAdmin;
+}
+
+function clearAccountState() {
+  currentUser = null;
+  currentProfile = null;
+
+  if (accountButton) {
+    accountButton.textContent = "Войти";
+  }
+
+  if (openAdmin) {
+    openAdmin.hidden = true;
+  }
+
+  if (adminApplications) {
+    adminApplications.innerHTML =
+      '<p class="empty-state">Войдите в аккаунт администратора.</p>';
+  }
+
+  closeOverlay(adminOverlay);
+  closeOverlay(accountOverlay);
+}
+
+/*
+  Эта функция каждый раз получает актуального пользователя
+  от Supabase и заново загружает его профиль.
+  Если проверка не проходит, доступ администратора закрывается.
+*/
+
+async function verifyAdminAccess() {
+  if (!supabaseClient) {
+    clearAccountState();
+    return false;
+  }
+
+  try {
+    const { data: userData, error: userError } =
+      await supabaseClient.auth.getUser();
+
+    if (userError || !userData?.user) {
+      clearAccountState();
+      return false;
+    }
+
+    currentUser = userData.user;
+
+    const profile = await loadProfile();
+
+    if (!profile || profile.role !== "admin") {
+      updateAdminAccess();
+      return false;
+    }
+
+    updateAdminAccess();
+
+    return true;
+
+  } catch (error) {
+    console.error("Admin access verification error:", error);
+
+    currentProfile = null;
+    updateAdminAccess();
+
+    return false;
+  }
+}
+
 /* USERNAME И ТЕХНИЧЕСКИЙ EMAIL */
 
 /*
@@ -412,7 +495,11 @@ function openAuth(mode = "login") {
 /* ЗАГРУЗКА ПРОФИЛЯ */
 
 async function loadProfile() {
-  if (!supabaseClient || !currentUser) return null;
+  if (!supabaseClient || !currentUser) {
+    currentProfile = null;
+    updateAdminAccess();
+    return null;
+  }
 
   const { data, error } = await supabaseClient
     .from("profiles")
@@ -420,9 +507,15 @@ async function loadProfile() {
     .eq("id", currentUser.id)
     .single();
 
-  if (error) throw error;
+  if (error) {
+    currentProfile = null;
+    updateAdminAccess();
+    throw error;
+  }
 
   currentProfile = data;
+
+  updateAdminAccess();
 
   return data;
 }
@@ -431,9 +524,7 @@ async function loadProfile() {
 
 async function refreshAuthState() {
   if (!supabaseClient) {
-    if (accountButton) {
-      accountButton.textContent = "Войти";
-    }
+    clearAccountState();
 
     showToast(
       "Не удалось загрузить Supabase. Проверь подключение к интернету."
@@ -442,51 +533,61 @@ async function refreshAuthState() {
     return;
   }
 
-  const { data } = await supabaseClient.auth.getSession();
+  try {
+    const { data, error } = await supabaseClient.auth.getUser();
 
-  currentUser = data.session?.user || null;
-  currentProfile = null;
+    if (error || !data?.user) {
+      clearAccountState();
+      return;
+    }
 
-  if (currentUser) {
+    currentUser = data.user;
+    currentProfile = null;
+
+    if (accountButton) {
+      accountButton.textContent = "Мой аккаунт";
+    }
+
     try {
       await loadProfile();
+    } catch (profileError) {
+      console.error("Profile load error:", profileError);
 
-      if (accountButton) {
-        accountButton.textContent = "Мой аккаунт";
-      }
-    } catch (error) {
-      console.error("Profile load error:", error);
-
-      if (accountButton) {
-        accountButton.textContent = "Аккаунт";
-      }
+      currentProfile = null;
+      updateAdminAccess();
     }
-  } else if (accountButton) {
-    accountButton.textContent = "Войти";
+
+  } catch (error) {
+    console.error("Session refresh error:", error);
+    clearAccountState();
   }
 }
 
 /* ЛИЧНЫЙ КАБИНЕТ */
 
 accountButton?.addEventListener("click", async () => {
+  if (!supabaseClient) {
+    openAuth("login");
+    return;
+  }
+
+  await refreshAuthState();
+
   if (!currentUser) {
     openAuth("login");
     return;
   }
 
   try {
-    if (!currentProfile) {
-      await loadProfile();
-    }
-
     await renderMyApplications();
 
     accountUsername.textContent =
       currentProfile?.username || currentUser.email;
 
-    openAdmin.hidden = currentProfile?.role !== "admin";
+    updateAdminAccess();
 
     openOverlay(accountOverlay);
+
   } catch (error) {
     console.error(error);
     showToast("Не удалось загрузить личный кабинет.");
@@ -561,6 +662,7 @@ authForm?.addEventListener("submit", async event => {
           "Supabase ожидает подтверждение email. Отключи Confirm email в настройках Email Provider и повтори регистрацию."
         );
       }
+
     } else {
       result = await supabaseClient.auth.signInWithPassword({
         email: usernameEmail(username),
@@ -588,12 +690,15 @@ authForm?.addEventListener("submit", async event => {
     }
 
     currentUser = result.data.user;
+    currentProfile = null;
 
     await loadProfile();
 
     closeOverlay(authOverlay);
 
     accountButton.textContent = "Мой аккаунт";
+
+    updateAdminAccess();
 
     showToast(
       authMode === "signup"
@@ -632,6 +737,10 @@ authForm?.addEventListener("submit", async event => {
 /* МОИ АНКЕТЫ */
 
 async function renderMyApplications() {
+  if (!supabaseClient || !currentUser) {
+    throw new Error("Необходимо войти в аккаунт.");
+  }
+
   myApplications.innerHTML =
     '<p class="empty-state">Загрузка...</p>';
 
@@ -745,16 +854,52 @@ async function submitApplicationToSupabase(application) {
 /* АДМИН-ПАНЕЛЬ */
 
 openAdmin?.addEventListener("click", async () => {
-  closeOverlay(accountOverlay);
+  openAdmin.disabled = true;
 
-  openOverlay(adminOverlay);
+  try {
+    const isAdmin = await verifyAdminAccess();
 
-  await renderAdminApplications();
+    if (!isAdmin) {
+      closeOverlay(adminOverlay);
+      showToast("Доступ запрещён. Эта панель доступна только администраторам.");
+      return;
+    }
+
+    closeOverlay(accountOverlay);
+    openOverlay(adminOverlay);
+
+    await renderAdminApplications();
+
+  } catch (error) {
+    console.error("Admin panel error:", error);
+
+    closeOverlay(adminOverlay);
+    showToast("Не удалось открыть панель администратора.");
+
+  } finally {
+    openAdmin.disabled = false;
+    updateAdminAccess();
+  }
 });
 
 /* ЗАГРУЗКА ЗАЯВОК ДЛЯ АДМИНА */
 
 async function renderAdminApplications() {
+  if (!adminApplications) return;
+
+  const isAdmin = await verifyAdminAccess();
+
+  if (!isAdmin) {
+    adminApplications.innerHTML =
+      '<p class="empty-state">Доступ запрещён.</p>';
+
+    closeOverlay(adminOverlay);
+
+    showToast("У тебя нет прав администратора.");
+
+    return;
+  }
+
   adminApplications.innerHTML =
     '<p class="empty-state">Загрузка заявок...</p>';
 
@@ -844,26 +989,34 @@ async function renderAdminApplications() {
 /* ОБРАБОТКА РЕШЕНИЙ АДМИНИСТРАТОРА */
 
 adminApplications?.addEventListener("click", async event => {
-  const button = event.target.closest("button[data-status]");
+  const button = event.target.closest?.("button[data-status]");
 
   if (!button) return;
-
-  const card = button.closest("[data-application-id]");
-  const id = card?.dataset.applicationId;
-
-  if (!id) {
-    showToast("Не удалось определить заявку.");
-    return;
-  }
-
-  const comment =
-    card.querySelector(".admin-comment")?.value || "";
-
-  const newStatus = button.dataset.status;
 
   button.disabled = true;
 
   try {
+    const isAdmin = await verifyAdminAccess();
+
+    if (!isAdmin) {
+      showToast("Доступ запрещён. Необходима роль администратора.");
+      closeOverlay(adminOverlay);
+      return;
+    }
+
+    const card = button.closest("[data-application-id]");
+    const id = card?.dataset.applicationId;
+
+    if (!id) {
+      showToast("Не удалось определить заявку.");
+      return;
+    }
+
+    const comment =
+      card.querySelector(".admin-comment")?.value || "";
+
+    const newStatus = button.dataset.status;
+
     const { data, error } = await supabaseClient
       .from("applications")
       .update({
@@ -927,6 +1080,11 @@ adminApplications?.addEventListener("click", async event => {
 /* ВЫХОД ИЗ АККАУНТА */
 
 logoutButton?.addEventListener("click", async () => {
+  if (!supabaseClient) {
+    clearAccountState();
+    return;
+  }
+
   const { error } = await supabaseClient.auth.signOut();
 
   if (error) {
@@ -934,12 +1092,7 @@ logoutButton?.addEventListener("click", async () => {
     return;
   }
 
-  currentUser = null;
-  currentProfile = null;
-
-  closeOverlay(accountOverlay);
-
-  accountButton.textContent = "Войти";
+  clearAccountState();
 
   showToast("Ты вышел из аккаунта.");
 });
@@ -1067,14 +1220,24 @@ applicationForm?.addEventListener("submit", async event => {
 if (supabaseClient) {
   supabaseClient.auth.onAuthStateChange((_event, session) => {
     currentUser = session?.user || null;
+    currentProfile = null;
+
+    updateAdminAccess();
 
     if (!currentUser) {
-      currentProfile = null;
-
-      if (accountButton) {
-        accountButton.textContent = "Войти";
-      }
+      clearAccountState();
+      return;
     }
+
+    if (accountButton) {
+      accountButton.textContent = "Мой аккаунт";
+    }
+
+    /*
+      Обновляем профиль после завершения auth callback.
+      Это позволяет не выполнять запрос Supabase внутри callback.
+    */
+    Promise.resolve().then(() => refreshAuthState());
   });
 
   refreshAuthState();
@@ -1083,4 +1246,6 @@ if (supabaseClient) {
   console.error(
     "Supabase SDK не загружен. Проверь подключение CDN."
   );
+
+  clearAccountState();
 }
