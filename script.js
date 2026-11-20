@@ -849,33 +849,79 @@ adminApplications?.addEventListener("click", async event => {
   if (!button) return;
 
   const card = button.closest("[data-application-id]");
-
   const id = card?.dataset.applicationId;
 
-  const comment =
-    card?.querySelector(".admin-comment")?.value || "";
-
-  button.disabled = true;
-
-  const { error } = await supabaseClient
-    .from("applications")
-    .update({
-      status: button.dataset.status,
-      admin_comment: comment,
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", id);
-
-  button.disabled = false;
-
-  if (error) {
-    showToast("Не удалось обновить заявку: " + error.message);
+  if (!id) {
+    showToast("Не удалось определить заявку.");
     return;
   }
 
-  showToast("Статус заявки обновлён.");
+  const comment =
+    card.querySelector(".admin-comment")?.value || "";
 
-  await renderAdminApplications();
+  const newStatus = button.dataset.status;
+
+  button.disabled = true;
+
+  try {
+    const { data, error } = await supabaseClient
+      .from("applications")
+      .update({
+        status: newStatus,
+        admin_comment: comment,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", id)
+      .select("id, status")
+      .maybeSingle();
+
+    if (error) {
+      console.error("Ошибка обновления заявки:", error);
+
+      showToast(
+        "Не удалось обновить заявку: " + error.message
+      );
+
+      return;
+    }
+
+    if (!data) {
+      console.error(
+        "Supabase не обновил ни одной строки. Возможно, UPDATE запрещён политикой RLS.",
+        { applicationId: id, requestedStatus: newStatus }
+      );
+
+      showToast(
+        "Заявка не обновлена. Проверь UPDATE-политику RLS в Supabase."
+      );
+
+      return;
+    }
+
+    if (data.status !== newStatus) {
+      showToast(
+        "Supabase вернул неожиданный статус: " + data.status
+      );
+
+      await renderAdminApplications();
+
+      return;
+    }
+
+    await renderAdminApplications();
+
+    showToast("Статус заявки успешно изменён.");
+
+  } catch (error) {
+    console.error("Ошибка при изменении статуса:", error);
+
+    showToast(
+      "Ошибка при изменении статуса: " + error.message
+    );
+
+  } finally {
+    button.disabled = false;
+  }
 });
 
 /* ВЫХОД ИЗ АККАУНТА */
