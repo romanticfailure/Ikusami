@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070D16">
+  <meta name="description" content="Ikusami — Minecraft Clan Community">
+  <title>Ikusami — Clan Applications</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div class="background-grid"></div>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="topbar-wrap">
+    <div class="topbar shell">
+
+      <a class="brand" href="#" data-page="application">Ikusami<span>.</span></a>
+
+      <nav class="nav">
+        <button class="nav-link active" data-page="application">Заявка</button>
+        <button class="nav-link" data-page="information">Информация</button>
+        <button class="nav-link" data-page="rules">Правила</button>
+      </nav>
+
+      <div class="topbar-actions">
+        <button class="account-button" id="accountButton" type="button">Войти</button>
+        <a class="discord-button"
+           href="https://discord.gg/FFc5VaVrdD"
+           target="_blank"
+           rel="noopener noreferrer">
+          Discord <span>↗</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="shell">
+
+    <!-- ГЛАВНАЯ -->
+
+    <section id="page-application" class="page active">
+
+      <div class="hero">
+        <div class="eyebrow">
+          <span class="status-dot"></span>
+          IKUSAMI COMMUNITY
+        </div>
+
+        <h1>Твоя история<br>начинается <span>здесь.</span></h1>
+
+        <p class="hero-description">
+          Мы ищем активных игроков, готовых развиваться,
+          побеждать и становиться частью нашей команды.
+        </p>
+
+        <button class="primary-button" id="createTicket">
+          Создать тикет <span>→</span>
+        </button>
+
+        <div class="hero-note">Подача заявки · Minecraft Clan</div>
+      </div>
+
+      <div class="feature-grid">
+
+        <article class="feature-card">
+          <span class="card-number">01 / COMMUNITY</span>
+          <h3>Наше сообщество</h3>
+          <p>Стань частью команды, где ценят активность, общение и взаимопомощь.</p>
+        </article>
+
+        <article class="feature-card">
+          <span class="card-number">02 / PROGRESS</span>
+          <h3>Общее развитие</h3>
+          <p>Развивай свои навыки, участвуй в событиях и добивайся новых результатов.</p>
+        </article>
+
+        <article class="feature-card">
+          <span class="card-number">03 / APPLICATION</span>
+          <h3>Простой процесс</h3>
+          <p>Заполни анкету и дождись решения администрации клана.</p>
+        </article>
+
+      </div>
+
+      <div class="community-card">
+        <div>
+          <span class="card-number">JOIN OUR COMMUNITY</span>
+          <h2>Увидимся в Discord.</h2>
+          <p>Присоединяйся к нашему сообществу и следи за новостями.</p>
+        </div>
+
+        <a href="https://discord.gg/FFc5VaVrdD"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="secondary-button">
+          Перейти <span>↗</span>
+        </a>
+      </div>
+
+    </section>
+
+    <!-- ИНФОРМАЦИЯ -->
+
+    <section id="page-information" class="page subpage">
+
+      <div class="subpage-heading">
+        <span class="eyebrow">01 / INFORMATION</span>
+        <h1>Информация<span>.</span></h1>
+        <p>Всё, что необходимо знать перед подачей заявки.</p>
+      </div>
+
+      <div class="content-card">
+        <span class="card-number">О НАС</span>
+        <h2>Добро пожаловать в Ikusami.</h2>
+        <p>
+          Ikusami — сообщество игроков Minecraft.
+          Мы собираем команду активных участников, которые хотят
+          развиваться, играть вместе и достигать общих целей.
+        </p>
+      </div>
+
+      <div class="content-card">
+        <span class="card-number">КАК ПОПАСТЬ В КЛАН</span>
+        <h2>Всего несколько шагов.</h2>
+
+        <ol class="steps-list">
+          <li>Нажми кнопку «Создать тикет».</li>
+          <li>Выбери нужный раздел.</li>
+          <li>Заполни все обязательные поля анкеты.</li>
+          <li>Дождись рассмотрения заявки администрацией.</li>
+        </ol>
+      </div>
+
+    </section>
+
+    <!-- ПРАВИЛА DISCORD -->
+
+    <section id="page-rules" class="page subpage rules-page">
+
+      <div class="rules-header">
+        <span class="eyebrow">IKUSAMI / COMMUNITY GUIDELINES</span>
+        <h1>Правила<span>.</span></h1>
+        <p>Ознакомься с правилами нашего сообщества перед участием.</p>
+      </div>
+
+      <div class="rules-container">
+
+        <div class="rules-container-heading">
+          <div class="rules-heading-mark"></div>
+          <div>
+            <span class="card-number">IKUSAMI DISCORD</span>
+            <h2>Правила для нашего Discord-сервера</h2>
+            <p>Пожалуйста, соблюдай правила и уважай других участников.</p>
+          </div>
+        </div>
+
+        <div class="rules-divider"></div>
+
+        <article class="rules-section">
+          <div class="rules-section-title">
+            <span class="rules-index">01</span>
+            <h3>Общие правила</h3>
+          </div>
+
+          <ol class="rules-items">
+            <li>Незнание правил не освобождает от ответственности.</li>
+            <li>Заходя на наш Discord-сервер, вы автоматически соглашаетесь с данными правилами.</li>
+            <li>Модерация оставляет за собой право применять наказания по своему усмотрению.</li>
+            <li>Некоторые правила могут не распространяться на участников клана.</li>
+          </ol>
+        </article>
+
+        <div class="rules-divider"></div>
+
+        <article class="rules-section">
+          <div class="rules-section-title">
+            <span class="rules-index">02</span>
+            <h3>Правила чата</h3>
+          </div>
+
+          <ol class="rules-items">
+            <li>Запрещено любое мошенничество.</li>
+            <li>Запрещено использовать чат в качестве торговой площадки.</li>
+            <li>Флуд, спам и отправка однотипных сообщений более трёх раз подряд — запрещены.</li>
+            <li>Реклама (видео, Discord-серверов, групп, каналов и прочего) — только с разрешения администрации.</li>
+            <li>Запрещена публикация контента сексуального характера (фото, видео, GIF и т.д.).</li>
+            <li>Категорически запрещено распространять личную или конфиденциальную информацию других лиц без их согласия.</li>
+            <li>Оскорбления, травля и дискриминация по взглядам, предпочтениям или действиям — строго запрещены.</li>
+            <li>Обсуждение политики, расовых, этнических и религиозных тем — запрещено, чтобы избежать конфликтов.</li>
+          </ol>
+        </article>
+
+        <div class="rules-divider"></div>
+
+        <article class="rules-section">
+          <div class="rules-section-title">
+            <span class="rules-index">03</span>
+            <h3>Правила голосовых каналов</h3>
+          </div>
+
+          <ol class="rules-items">
+            <li>Не издавайте раздражающих звуков (шум, дыхание в микрофон, скрежет и т.д.).</li>
+            <li>Старайтесь избегать фоновых шумов (разговоров, телевизора, музыки и прочего).</li>
+            <li>Запрещено создавать или издавать звуки, которые вызывают дискомфорт у других участников.</li>
+            <li>Троллинг и провокации в голосовых каналах — недопустимы, если это мешает другим.</li>
+          </ol>
+        </article>
+
+        <div class="rules-bottom-note">
+          <span class="status-dot"></span>
+          <p>Спасибо, что помогаешь сохранять комфортную атмосферу в Ikusami.</p>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="footer shell">
+    <span>Ikusami<span class="footer-dot">.</span></span>
+    <span>© 2026 IKUSAMI COMMUNITY</span>
+  </footer>
+
+  <!-- ПРЕДУПРЕЖДЕНИЕ -->
+
+  <div class="overlay" id="noticeOverlay">
+    <div class="modal">
+
+      <button class="close-button" data-close="noticeOverlay">×</button>
+
+      <span class="eyebrow">APPLICATION / NOTICE</span>
+      <h2>Перед началом</h2>
+
+      <p class="modal-description">
+        Тикеты, не заполненные по установленной анкете,
+        не рассматриваются администрацией.
+      </p>
+
+      <button class="primary-button full-button" id="continueApplication">
+        Понятно, продолжить <span>→</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ВЫБОР РАЗДЕЛА -->
+
+  <div class="overlay" id="serverOverlay">
+    <div class="modal">
+
+      <button class="close-button" data-close="serverOverlay">×</button>
+
+      <span class="eyebrow">APPLICATION / SECTION</span>
+      <h2>Выбери раздел</h2>
+      <p class="modal-description">Выбери, куда хочешь подать заявку.</p>
+
+      <div class="server-list">
+        <button class="server-option" data-server="HolyWorld">
+          <span>HolyWorld</span><span>→</span>
+        </button>
+
+        <button class="server-option" data-server="FunTime">
+          <span>FunTime</span><span>→</span>
+        </button>
+
+        <button class="server-option" data-server="SpaceTime">
+          <span>SpaceTime</span><span>→</span>
+        </button>
+
+        <button class="server-option" data-server="Discord Staff">
+          <span>Discord Staff</span><span>→</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- АНКЕТА -->
+
+  <div class="overlay" id="formOverlay">
+    <div class="modal form-modal">
+
+      <button class="close-button" data-close="formOverlay">×</button>
+
+      <span class="eyebrow">APPLICATION / FORM</span>
+      <h2>Анкета игрока</h2>
+
+      <p class="modal-description">
+        Раздел: <strong id="selectedServer">—</strong>
+      </p>
+
+      <form id="applicationForm" novalidate>
+
+        <div class="form-grid">
+
+          <label class="form-field">
+            <span>Никнейм Minecraft <b>*</b></span>
+            <input name="nickname" type="text" placeholder="Твой никнейм">
+          </label>
+
+          <label class="form-field">
+            <span>Возраст <b>*</b></span>
+            <input name="age" type="number" min="1" max="99" placeholder="Возраст">
+          </label>
+
+          <label class="form-field">
+            <span>Опыт игры <b>*</b></span>
+            <input name="experience" type="text" placeholder="Например, 2 года">
+          </label>
+
+          <label class="form-field">
+            <span>Онлайн в день <b>*</b></span>
+            <input name="online" type="text" placeholder="Например, 4–6 часов">
+          </label>
+
+          <label class="form-field">
+            <span>Предыдущие кланы <b>*</b></span>
+            <input name="clans" type="text" placeholder="Укажи кланы или напиши «Нет»">
+          </label>
+
+          <label class="form-field">
+            <span>Ваш донат <b>*</b></span>
+            <input name="donate" type="text">
+          </label>
+
+          <label class="form-field">
+            <span>Оценка своего PvP <b>*</b></span>
+            <select name="pvp">
+              <option value="">Выбери оценку</option>
+              <option value="1">1 / 10</option>
+              <option value="2">2 / 10</option>
+              <option value="3">3 / 10</option>
+              <option value="4">4 / 10</option>
+              <option value="5">5 / 10</option>
+              <option value="6">6 / 10</option>
+              <option value="7">7 / 10</option>
+              <option value="8">8 / 10</option>
+              <option value="9">9 / 10</option>
+              <option value="10">10 / 10</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Часовой пояс относительно МСК <b>*</b></span>
+            <select name="timezone">
+              <option value="">Выбери часовой пояс</option>
+              <option value="-12">МСК −12</option>
+              <option value="-11">МСК −11</option>
+              <option value="-10">МСК −10</option>
+              <option value="-9">МСК −9</option>
+              <option value="-8">МСК −8</option>
+              <option value="-7">МСК −7</option>
+              <option value="-6">МСК −6</option>
+              <option value="-5">МСК −5</option>
+              <option value="-4">МСК −4</option>
+              <option value="-3">МСК −3</option>
+              <option value="-2">МСК −2</option>
+              <option value="-1">МСК −1</option>
+              <option value="0">МСК ±0</option>
+              <option value="1">МСК +1</option>
+              <option value="2">МСК +2</option>
+              <option value="3">МСК +3</option>
+              <option value="4">МСК +4</option>
+              <option value="5">МСК +5</option>
+              <option value="6">МСК +6</option>
+              <option value="7">МСК +7</option>
+              <option value="8">МСК +8</option>
+              <option value="9">МСК +9</option>
+              <option value="10">МСК +10</option>
+              <option value="11">МСК +11</option>
+              <option value="12">МСК +12</option>
+            </select>
+          </label>
+
+          <label class="form-field full-field">
+            <span>Почему хочешь вступить к нам? <b>*</b></span>
+            <textarea name="reason" rows="3" placeholder="Расскажи о своей мотивации..."></textarea>
+          </label>
+
+          <label class="form-field full-field">
+            <span>Дополнительная информация</span>
+            <textarea name="extra" rows="3" placeholder="Необязательно"></textarea>
+          </label>
+
+        </div>
+
+        <p class="form-error" id="formError" role="alert"></p>
+
+        <button class="primary-button full-button" type="submit">
+          Отправить анкету <span>→</span>
+        </button>
+
+        <p class="form-footnote">* Обязательные поля</p>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- АВТОРИЗАЦИЯ -->
+
+  <div class="overlay" id="authOverlay">
+    <div class="modal auth-modal">
+      <button class="close-button" data-close="authOverlay" type="button">×</button>
+      <span class="eyebrow">IKUSAMI / ACCOUNT</span>
+      <h2 id="authTitle">Вход в аккаунт</h2>
+      <p class="modal-description" id="authDescription">Войди, чтобы отправлять анкеты и отслеживать их статус.</p>
+
+      <form id="authForm" class="auth-form" novalidate>
+        <label class="form-field">
+          <span>Discord username</span>
+          <input name="username" type="text" minlength="3" maxlength="24" autocomplete="username" placeholder="Твой username" required>
+        </label>
+
+        <label class="form-field">
+          <span>Пароль</span>
+          <input name="password" type="password" minlength="8" autocomplete="current-password" placeholder="Не менее 8 символов" required>
+        </label>
+
+        <p class="form-error" id="authError" role="alert"></p>
+        <button class="primary-button full-button" id="authSubmit" type="submit">Войти <span>→</span></button>
+      </form>
+
+      <button class="auth-switch" id="authSwitch" type="button">Нет аккаунта? Зарегистрироваться</button>
+      <p class="auth-note">Почта не используется. Восстановление забытого пароля без почты или телефона недоступно.</p>
+    </div>
+  </div>
+
+  <!-- ЛИЧНЫЙ КАБИНЕТ -->
+
+  <div class="overlay" id="accountOverlay">
+    <div class="modal account-modal">
+      <button class="close-button" data-close="accountOverlay" type="button">×</button>
+      <span class="eyebrow">IKUSAMI / PROFILE</span>
+      <h2>Личный кабинет</h2>
+      <p class="modal-description">Аккаунт: <strong id="accountUsername">—</strong></p>
+
+      <div class="account-status-block">
+        <span class="card-number">МОИ АНКЕТЫ</span>
+        <div id="myApplications" class="application-list">
+          <p class="empty-state">Загрузка...</p>
+        </div>
+      </div>
+
+      <div class="account-actions">
+        <button class="secondary-button" id="openAdmin" type="button" hidden>Админ-панель</button>
+        <button class="logout-button" id="logoutButton" type="button">Выйти из аккаунта</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- АДМИН-ПАНЕЛЬ -->
+
+  <div class="overlay" id="adminOverlay">
+    <div class="modal admin-modal">
+      <button class="close-button" data-close="adminOverlay" type="button">×</button>
+      <span class="eyebrow">IKUSAMI / MODERATION</span>
+      <h2>Заявки участников</h2>
+      <p class="modal-description">Просмотр и обработка отправленных анкет.</p>
+      <div id="adminApplications" class="application-list">
+        <p class="empty-state">Загрузка...</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+</body>
+</html>
