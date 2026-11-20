@@ -1711,3 +1711,125 @@ select:focus-visible {
     flex-direction: column;
   }
 }
+
+/* ==========================================
+   NOTICE TIP, AUTH HINT, FAQ
+   ========================================== */
+
+.notice-tip {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin: 0 0 24px;
+  padding: 16px 18px;
+  border: 1px solid rgba(155, 199, 229, .28);
+  border-radius: 14px;
+  background: rgba(155, 199, 229, .07);
+}
+
+.notice-tip-icon {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: rgba(155, 199, 229, .1);
+  color: var(--accent-light);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.notice-tip strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--accent-light);
+  font-size: 13px;
+  letter-spacing: -.02em;
+}
+
+.notice-tip p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.auth-hint {
+  margin: 0;
+  padding: 11px 13px;
+  border: 1px solid rgba(155, 199, 229, .22);
+  border-radius: 11px;
+  background: rgba(155, 199, 229, .06);
+  color: var(--accent-light);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.auth-hint[hidden] {
+  display: none;
+}
+
+.faq-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.faq-item {
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: rgba(155, 199, 229, .035);
+  transition: border-color .2s ease, background .2s ease;
+}
+
+.faq-item[open],
+.faq-item:hover {
+  border-color: var(--line-strong);
+  background: rgba(155, 199, 229, .06);
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: "+";
+  flex: 0 0 auto;
+  color: var(--accent);
+  font-size: 20px;
+  line-height: 1;
+  transition: transform .2s ease;
+}
+
+.faq-item[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.faq-item p {
+  margin: 0;
+  padding: 0 18px 16px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.admin-discord {
+  color: var(--accent-light);
+  font-weight: 600;
+}
