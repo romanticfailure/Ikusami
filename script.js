@@ -34,7 +34,15 @@ function showPage(name) {
   });
 
   navLinks.forEach(link => {
-    link.classList.toggle("active", link.dataset.page === name);
+    const isActive = link.dataset.page === name;
+
+    link.classList.toggle("active", isActive);
+
+    if (isActive) {
+      link.setAttribute("aria-current", "page");
+    } else {
+      link.removeAttribute("aria-current");
+    }
   });
 
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -51,11 +59,50 @@ document.querySelector(".brand")?.addEventListener("click", event => {
 
 /* МОДАЛЬНЫЕ ОКНА */
 
+let lastFocusedElement = null;
+
+/* Доступность: роли диалогов, подписи и кнопки закрытия */
+overlays.forEach((overlay, index) => {
+  const modal = overlay.querySelector(".modal");
+  const heading = modal?.querySelector("h2");
+
+  if (modal) {
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("tabindex", "-1");
+
+    if (heading) {
+      heading.id = heading.id || `modalTitle${index}`;
+      modal.setAttribute("aria-labelledby", heading.id);
+    }
+  }
+});
+
+document.querySelectorAll(".close-button").forEach(button => {
+  button.setAttribute("aria-label", "Закрыть");
+});
+
 function openOverlay(overlay) {
   if (!overlay) return;
 
+  const anotherOpen = [...overlays].some(item =>
+    item !== overlay && item.classList.contains("open")
+  );
+
+  if (!anotherOpen && document.activeElement instanceof HTMLElement) {
+    lastFocusedElement = document.activeElement;
+  }
+
   overlay.classList.add("open");
   document.body.style.overflow = "hidden";
+
+  const modal = overlay.querySelector(".modal");
+  const firstField =
+    overlay.id === "authOverlay"
+      ? modal?.querySelector("input")
+      : null;
+
+  (firstField || modal)?.focus({ preventScroll: true });
 }
 
 function closeOverlay(overlay) {
@@ -69,6 +116,10 @@ function closeOverlay(overlay) {
 
   if (!anotherOpen) {
     document.body.style.overflow = "";
+
+    if (lastFocusedElement?.isConnected) {
+      lastFocusedElement.focus({ preventScroll: true });
+    }
   }
 }
 
@@ -480,6 +531,15 @@ function openAuth(mode = "login") {
       ? "Уже есть аккаунт? Войти"
       : "Нет аккаунта? Зарегистрироваться";
 
+  const authHint = document.getElementById("authHint");
+  if (authHint) authHint.hidden = mode !== "signup";
+
+  const passwordInput = authForm.querySelector('input[name="password"]');
+  if (passwordInput) {
+    passwordInput.autocomplete =
+      mode === "signup" ? "new-password" : "current-password";
+  }
+
   authForm.reset();
   openOverlay(authOverlay);
 }
@@ -784,10 +844,15 @@ async function submitApplicationToSupabase(application) {
     return;
   }
 
+  const discordUsername =
+    currentProfile?.username ||
+    currentUser.user_metadata?.username ||
+    null;
+
   const payload = {
     user_id: currentUser.id,
     server: currentServer,
-    data: application,
+    data: { ...application, discordUsername },
     status: "pending"
   };
 
@@ -863,7 +928,8 @@ function getFilteredAdminApplications() {
         item.user_id,
         item.id,
         item.status,
-        item.data?.discordNickname
+        item.data?.discordNickname,
+        item.data?.discordUsername
       ].join(" ").toLowerCase();
 
       return searchable.includes(search);
@@ -934,6 +1000,12 @@ function renderFilteredAdminApplications() {
           <span class="admin-meta-chip">Дата: ${escapeHtml(date)}</span>
           <span class="admin-meta-chip">ID: ${escapeHtml(item.id)}</span>
         </div>
+
+        ${
+          item.data?.discordUsername
+            ? `<p>Discord для связи: <span class="admin-discord">@${escapeHtml(item.data.discordUsername)}</span></p>`
+            : ""
+        }
 
         <p>Пользователь: ${escapeHtml(item.user_id)}</p>
 
@@ -1296,7 +1368,25 @@ applicationForm?.addEventListener("submit", async event => {
     };
   }
 
-  await submitApplicationToSupabase(application);
+  const submitButton = applicationForm.querySelector('button[type="submit"]');
+
+  if (submitButton?.disabled) return;
+
+  const submitLabel = submitButton?.innerHTML;
+
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = "Отправляем...";
+  }
+
+  try {
+    await submitApplicationToSupabase(application);
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.innerHTML = submitLabel;
+    }
+  }
 });
 
 /* СИНХРОНИЗАЦИЯ СЕССИИ */

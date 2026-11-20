@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#070D16">
-  <meta name="description" content="Ikusami — Minecraft Clan Community">
+  <meta name="description" content="Ikusami — сообщество игроков Minecraft. Подай заявку в клан: HolyWorld, FunTime, SpaceTime или Discord Staff.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ikusami — Clan Applications">
+  <meta property="og:description" content="Сообщество игроков Minecraft. Подай заявку в клан и стань частью команды.">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23070D16'/%3E%3Ctext x='32' y='45' font-family='Arial,sans-serif' font-size='40' font-weight='700' text-anchor='middle' fill='%239BC7E5'%3EI%3C/text%3E%3C/svg%3E">
   <title>Ikusami — Clan Applications</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
@@ -118,6 +123,28 @@
           <li>Дождись рассмотрения заявки администрацией.</li>
         </ol>
       </div>
+
+      <div class="content-card">
+        <span class="card-number">ЧАСТЫЕ ВОПРОСЫ</span>
+        <h2>Коротко о главном.</h2>
+
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>Какой username указывать при регистрации?</summary>
+            <p>Свой Discord username. Администраторы связываются с игроками в Discord, поэтому важно, чтобы по нему можно было тебя найти.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>Где посмотреть статус заявки?</summary>
+            <p>Войди в аккаунт и открой «Мой аккаунт» — там отображаются все отправленные анкеты, их статус и комментарий администрации.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>Я забыл пароль. Что делать?</summary>
+            <p>Почта не используется, поэтому автоматического восстановления нет. Обратись к администрации в нашем Discord-сервере.</p>
+          </details>
+        </div>
+      </div>
     </section>
 
     <section id="page-rules" class="page subpage rules-page">
@@ -209,6 +236,19 @@
         Тикеты, не заполненные по установленной анкете,
         не рассматриваются администрацией.
       </p>
+
+      <div class="notice-tip">
+        <span class="notice-tip-icon" aria-hidden="true">@</span>
+        <div>
+          <strong>Используй свой Discord username</strong>
+          <p>
+            Для аккаунта лучше указать свой реальный username из Discord —
+            так администраторы смогут написать тебе в личные сообщения
+            и сообщить о решении по заявке.
+          </p>
+        </div>
+      </div>
+
       <button class="primary-button full-button" id="continueApplication">
         Понятно, продолжить <span>→</span>
       </button>
@@ -327,6 +367,10 @@
           <span>Пароль</span>
           <input name="password" type="password" minlength="8" autocomplete="current-password" placeholder="Не менее 8 символов" required>
         </label>
+        <p class="auth-hint" id="authHint" hidden>
+          Укажи свой настоящий Discord username — по нему администраторы
+          смогут связаться с тобой по поводу заявки.
+        </p>
         <p class="form-error" id="authError" role="alert"></p>
         <button class="primary-button full-button" id="authSubmit" type="submit">Войти <span>→</span></button>
       </form>
@@ -439,7 +483,7 @@
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 </body>
 </html>
